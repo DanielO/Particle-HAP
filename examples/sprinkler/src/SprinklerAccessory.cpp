@@ -18,7 +18,7 @@ std::string SprinklerAccessory::getActive (HKConnection *sender, int index) {
 	return "false";
 
     hkLog.info("getActive for index %d (%s) = %s", index, this->sprinklers[index].name, this->sprinklers[index].on ? "true" : "false");
-    return this->sprinklers[index].on ? "true" : "false";
+    return this->sprinklers[index].on ? "1" : "0";
 }
 
 void SprinklerAccessory::setActive (bool oldValue, bool newValue, HKConnection *sender, int index) {
@@ -42,7 +42,7 @@ std::string SprinklerAccessory::getInUse (HKConnection *sender, int index) {
     if (index < 0 || index > this->nsprink)
 	return "false";
     hkLog.info("getInUse for index %d (%s) = %s", index, this->sprinklers[index].name, this->sprinklers[index].on ? "true" : "false");
-    return this->sprinklers[index].on ? "true" : "false";
+    return this->sprinklers[index].on ? "1" : "0";
 }
 
 std::string SprinklerAccessory::getValveType (HKConnection *sender, int index) {
