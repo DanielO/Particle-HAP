@@ -30,6 +30,12 @@ void SprinklerAccessory::setActive (bool oldValue, bool newValue, HKConnection *
 	this->sprinklers[index].startedAt = Time.now();
 	this->sprinklers[index].stopAt = this->sprinklers[index].startedAt + this->sprinklers[index].setDuration;
     }
+
+    if (oldValue && !newValue) {
+	this->sprinklers[index].startedAt = 0;
+	this->sprinklers[index].stopAt = 0;
+	this->sprinklers[index].remChar->notify(NULL);
+  }
 }
 
 std::string SprinklerAccessory::getInUse (HKConnection *sender, int index) {
@@ -65,7 +71,9 @@ void SprinklerAccessory::setSetDuration(int oldValue, int newValue, HKConnection
 std::string SprinklerAccessory::getRemDuration(HKConnection *sender, int index) {
     if (index < 0 || index > this->nsprink)
 	return "";
-    int remaining = this->sprinklers[index].stopAt - this->sprinklers[index].startedAt;
+    int remaining = this->sprinklers[index].stopAt - Time.now();
+    if (remaining < 0)
+	remaining = 0;
     hkLog.info("getRemDuration for index %d (%s) = %d", index, this->sprinklers[index].name, remaining);
     return format("%d", remaining);
 }
@@ -124,9 +132,10 @@ void SprinklerAccessory::initAccessorySet() {
 	setDuration->valueChangeFunctionCall = std::bind(&SprinklerAccessory::setSetDuration, this, std::placeholders::_1, std::placeholders::_2,std::placeholders::_3, i);
 	sprinklerAcc->addCharacteristics(sprinklerService, setDuration);
 
-	// Remaining Duration (no notify, we never allow increasing it independently)
-	intCharacteristics *remDuration = new intCharacteristics(charType_remDuration, premission_read, 0, 3600, 1, unit_none);
+	// Remaining Duration
+	intCharacteristics *remDuration = new intCharacteristics(charType_remDuration, premission_read | premission_notify, 0, 3600, 1, unit_none);
 	remDuration->perUserQuery = std::bind(&SprinklerAccessory::getRemDuration, this, std::placeholders::_1, i);
+	this->sprinklers[i].remChar = remDuration;
 	sprinklerAcc->addCharacteristics(sprinklerService, remDuration);
     }
 }

@@ -37,13 +37,14 @@ typedef enum {
 } valveTypes;
 
 struct sprinkler {
-    const char	*name;
-    int		relayIO;
-    int		valveType;
-    bool	on;
-    uint16_t	setDuration;
-    uint32_t	startedAt;
-    uint32_t	stopAt;
+    const char		*name;
+    int			relayIO;
+    int			valveType;
+    bool		on;
+    uint16_t		setDuration;
+    uint32_t		startedAt;
+    uint32_t		stopAt;
+    intCharacteristics	*remChar;
 };
 
 class SprinklerAccessory: public HAPAccessoryDescriptor {
@@ -81,6 +82,7 @@ class SprinklerAccessory: public HAPAccessoryDescriptor {
 	    this->sprinklers[i].setDuration = tmp;
 	    this->sprinklers[i].startedAt = 0;
 	    this->sprinklers[i].stopAt = 0;
+	    this->sprinklers[i].remChar = NULL;
 	    pinMode(this->sprinklers[i].relayIO, OUTPUT);
 	}
 	this->nsprink = nsprink;
