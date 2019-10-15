@@ -34,6 +34,16 @@ void setup() {
     randomSeed(Time.now()); // we need to somehow init random seed, so device identity will be unique
     Serial.begin(115200);
 
+    // Set all 4 otherwise the last relay will stay on
+    pinMode(D0, OUTPUT);
+    digitalWrite(D0, LOW);
+    pinMode(D1, OUTPUT);
+    digitalWrite(D1, LOW);
+    pinMode(D2, OUTPUT);
+    digitalWrite(D2, LOW);
+    pinMode(D3, OUTPUT);
+    digitalWrite(D3, LOW);
+
     acc = new SprinklerAccessory(sprinklers, sizeof(sprinklers) / sizeof(sprinklers[0]), 0);
 
     hkServer = new HKServer(acc->getDeviceType(), "Sprinkler", "523-12-643", progress);
