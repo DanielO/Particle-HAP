@@ -29,12 +29,15 @@ void SprinklerAccessory::setActive (bool oldValue, bool newValue, HKConnection *
     if (!oldValue && newValue) {
 	this->sprinklers[index].startedAt = Time.now();
 	this->sprinklers[index].stopAt = this->sprinklers[index].startedAt + this->sprinklers[index].setDuration;
+	this->sprinklers[index].remChar->notify(NULL);
+	this->sprinklers[index].inUseChar->notify(NULL);
     }
 
     if (oldValue && !newValue) {
 	this->sprinklers[index].startedAt = 0;
 	this->sprinklers[index].stopAt = 0;
 	this->sprinklers[index].remChar->notify(NULL);
+	this->sprinklers[index].inUseChar->notify(NULL);
   }
 }
 
@@ -114,11 +117,13 @@ void SprinklerAccessory::initAccessorySet() {
 	intCharacteristics *active = new intCharacteristics(charType_active, premission_read | premission_write | premission_notify, 0, 1, 1, unit_none);
 	active->perUserQuery = std::bind(&SprinklerAccessory::getActive, this, std::placeholders::_1, i);
 	active->valueChangeFunctionCall = std::bind(&SprinklerAccessory::setActive, this, std::placeholders::_1, std::placeholders::_2,std::placeholders::_3, i);
+	this->sprinklers[i].activeChar = active;
 	sprinklerAcc->addCharacteristics(sprinklerService, active);
 
 	// In Use
 	intCharacteristics *inUse = new intCharacteristics(charType_inUse, premission_read | premission_notify, 0, 1, 1, unit_none);
 	inUse->perUserQuery = std::bind(&SprinklerAccessory::getInUse, this, std::placeholders::_1, i);
+	this->sprinklers[i].inUseChar = inUse;
 	sprinklerAcc->addCharacteristics(sprinklerService, inUse);
 
 	// Valve Type
@@ -156,6 +161,8 @@ void SprinklerAccessory::step(void) {
 	    this->sprinklers[i].on = false;
 	    this->sprinklers[i].startedAt = 0;
 	    this->sprinklers[i].stopAt = 0;
+	    this->sprinklers[i].activeChar->notify(NULL);
+	    this->sprinklers[i].inUseChar->notify(NULL);
 	}
 	if (dolog)
 	    hkLog.info("Sprinkler %d (%s) is %s", i, this->sprinklers[i].name, this->sprinklers[i].on ? "on" : "off");

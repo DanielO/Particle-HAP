@@ -45,6 +45,8 @@ struct sprinkler {
     uint32_t		startedAt;
     uint32_t		stopAt;
     intCharacteristics	*remChar;
+    intCharacteristics	*activeChar;
+    intCharacteristics	*inUseChar;
 };
 
 class SprinklerAccessory: public HAPAccessoryDescriptor {
@@ -83,6 +85,8 @@ class SprinklerAccessory: public HAPAccessoryDescriptor {
 	    this->sprinklers[i].startedAt = 0;
 	    this->sprinklers[i].stopAt = 0;
 	    this->sprinklers[i].remChar = NULL;
+	    this->sprinklers[i].activeChar = NULL;
+	    this->sprinklers[i].inUseChar = NULL;
 	    pinMode(this->sprinklers[i].relayIO, OUTPUT);
 	}
 	this->nsprink = nsprink;
