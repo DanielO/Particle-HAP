@@ -9,7 +9,8 @@
 typedef enum {
 // iOS 10.3+
     charType_active		= 0xB0, // uint8 RW
-    charType_serviceLabelIndex	= 0xCB,
+    charType_serviceLabelIndex	= 0xCB, // uint8 RO
+    charType_serviceLabelNamespace = 0xCD, // uint8 RO
 // iOS 11.2+
     charType_inUse		= 0xD2, // uint8 RO
     charType_valveType		= 0xD5, // uint8 RO

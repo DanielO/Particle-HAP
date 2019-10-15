@@ -101,6 +101,7 @@ void SprinklerAccessory::initAccessorySet() {
     AccessorySet *accSet = &AccessorySet::getInstance();
     accSet->addAccessory(sprinklerAcc);
 
+    int count = 1;
     for (int i = 0; i < this->nsprink; i++) {
 	hkLog.info("Creating service %s", this->sprinklers[i].name);
 	// Service for this accessory
@@ -112,6 +113,16 @@ void SprinklerAccessory::initAccessorySet() {
 	stringCharacteristics *sprinklerServiceName = new stringCharacteristics(charType_serviceName, premission_read, 0);
 	sprinklerServiceName->characteristics::setValue(this->sprinklers[i].name);
 	sprinklerAcc->addCharacteristics(sprinklerService, sprinklerServiceName);
+
+	// Service Label Index
+	intCharacteristics *serviceLabelIndex = new intCharacteristics(charType_serviceLabelIndex, premission_read, 1, 255, 1, unit_none);
+	serviceLabelIndex->characteristics::setValue(format("%d", count++));
+	sprinklerAcc->addCharacteristics(sprinklerService, serviceLabelIndex);
+
+	// Service Label Namespace
+	intCharacteristics *serviceLabelNamespace = new intCharacteristics(charType_serviceLabelIndex, premission_read, 0, 1, 1, unit_none);
+	serviceLabelNamespace->characteristics::setValue("1");
+	sprinklerAcc->addCharacteristics(sprinklerService, serviceLabelNamespace);
 
 	// Active
 	intCharacteristics *active = new intCharacteristics(charType_active, premission_read | premission_write | premission_notify, 0, 1, 1, unit_none);
