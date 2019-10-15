@@ -7,10 +7,15 @@
 
 #include "SprinklerAccessory.h"
 
+struct sprinkler sprinklers[] = {
+    { .name = "Front", 		.relayIO = D0, .valveType = valveTypes_irrigation },
+    { .name = "Garden Beds",	.relayIO = D1, .valveType = valveTypes_irrigation },
+    { .name = "Side",		.relayIO = D2, .valveType = valveTypes_irrigation },
+};
 
 SerialLogHandler logHandler(LOG_LEVEL_ALL);
 
-SprinklerAccessory *acc = new SprinklerAccessory(D0, 0);
+SprinklerAccessory *acc;
 
 HKServer *hkServer = NULL;
 
@@ -27,7 +32,9 @@ int restart(String extra) {
 // setup() runs once, when the device is first turned on.
 void setup() {
     randomSeed(Time.now()); // we need to somehow init random seed, so device identity will be unique
-    Serial.begin();
+    Serial.begin(115200);
+
+    acc = new SprinklerAccessory(sprinklers, sizeof(sprinklers) / sizeof(sprinklers[0]));
 
     hkServer = new HKServer(acc->getDeviceType(), "Sprinkler", "523-12-643", progress);
 
@@ -36,7 +43,6 @@ void setup() {
     hkServer->start();
 
     Particle.function("restart", restart);
-
 }
 
 // loop() runs over and over again, as quickly as it can execute.
@@ -47,6 +53,8 @@ void loop() {
     if (didAnything) {
 	//hkLog.info("Free memory %lu",System.freeMemory());
     }
+
+    acc->step();
 }
 /*
  * Local variables:
