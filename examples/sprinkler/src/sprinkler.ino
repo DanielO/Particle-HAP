@@ -34,7 +34,7 @@ void setup() {
     randomSeed(Time.now()); // we need to somehow init random seed, so device identity will be unique
     Serial.begin(115200);
 
-    acc = new SprinklerAccessory(sprinklers, sizeof(sprinklers) / sizeof(sprinklers[0]));
+    acc = new SprinklerAccessory(sprinklers, sizeof(sprinklers) / sizeof(sprinklers[0]), 0);
 
     hkServer = new HKServer(acc->getDeviceType(), "Sprinkler", "523-12-643", progress);
 
