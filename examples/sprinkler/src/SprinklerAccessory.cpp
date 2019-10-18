@@ -158,12 +158,19 @@ void SprinklerAccessory::initAccessorySet() {
 
 void SprinklerAccessory::step(void) {
     static uint32_t nextLog = 0;
+    static uint32_t nextPublish = 0;
     uint32_t now = Time.now();
     bool dolog = false;
+    bool dopublish = false;
 
     if (now > nextLog) {
 	dolog = true;
 	nextLog = now + 30;
+    }
+
+    if (now > nextPublish) {
+	dopublish = true;
+	nextPublish = now + 120;
     }
 
     for (int i = 0; i < this->nsprink; i++) {
@@ -177,6 +184,10 @@ void SprinklerAccessory::step(void) {
 	}
 	if (dolog)
 	    hkLog.info("Sprinkler %d (%s) is %s", i, this->sprinklers[i].name, this->sprinklers[i].on ? "on" : "off");
+
+	if (dopublish)
+	    Particle.publish("sprinkler/status", format("Sprinkler %d (%s) is %s", i, this->sprinklers[i].name, this->sprinklers[i].on ? "on" : "off").c_str());
+
 	digitalWrite(this->sprinklers[i].relayIO, this->sprinklers[i].on ? HIGH : LOW);
     }
 }
