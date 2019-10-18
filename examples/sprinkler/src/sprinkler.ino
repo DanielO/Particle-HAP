@@ -19,6 +19,21 @@ SprinklerAccessory *acc;
 
 HKServer *hkServer = NULL;
 
+void hwinit(void) {
+    // Set all 4 otherwise the last relay will stay on
+    pinMode(D0, OUTPUT);
+    digitalWrite(D0, LOW);
+    pinMode(D1, OUTPUT);
+    digitalWrite(D1, LOW);
+    pinMode(D2, OUTPUT);
+    digitalWrite(D2, LOW);
+    pinMode(D3, OUTPUT);
+    digitalWrite(D3, LOW);
+}
+// Set relay controls as soon as we can otherwise
+// they float and the relays turn on..
+STARTUP(hwinit);
+
 void progress(Progress_t progress) {
     hkLog.info("Homekit progress callback: %d", progress);
 }
@@ -31,18 +46,10 @@ int restart(String extra) {
 
 // setup() runs once, when the device is first turned on.
 void setup() {
+    hwinit();
+
     randomSeed(Time.now()); // we need to somehow init random seed, so device identity will be unique
     Serial.begin(115200);
-
-    // Set all 4 otherwise the last relay will stay on
-    pinMode(D0, OUTPUT);
-    digitalWrite(D0, LOW);
-    pinMode(D1, OUTPUT);
-    digitalWrite(D1, LOW);
-    pinMode(D2, OUTPUT);
-    digitalWrite(D2, LOW);
-    pinMode(D3, OUTPUT);
-    digitalWrite(D3, LOW);
 
     acc = new SprinklerAccessory(sprinklers, sizeof(sprinklers) / sizeof(sprinklers[0]), 0);
 
